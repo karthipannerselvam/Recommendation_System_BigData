@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Recommendation</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+  <div id="app">
+    <h1>Movie Recommendation System</h1>
+    <input v-model="movieTitle" placeholder="Enter movie title">
+    <button @click="getRecommendations">Get Recommendations</button>
+
+    <div v-if="recommendations.length > 0">
+      <h2>Recommendations:</h2>
+      <ul>
+        <li v-for="movie in recommendations" :key="movie.title">
+          {{ movie.title }} (Similarity: {{ movie.similarity.toFixed(2) }})
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        movieTitle: '',
+        recommendations: []
+      },
+      methods: {
+        async getRecommendations() {
+          try {
+            const response = await fetch('http://127.0.0.1:5000/recommend', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ title: this.movieTitle })
+            });
+            const data = await response.json();
+            this.recommendations = data;
+          } catch (error) {
+            console.error('Error fetching recommendations:', error);
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
